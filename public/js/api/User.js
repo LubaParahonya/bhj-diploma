@@ -1,48 +1,30 @@
-/**
- * Класс User управляет авторизацией, выходом и
- * регистрацией пользователя из приложения
- * Имеет свойство URL, равное '/user'.
- * */
 class User {
-  /**
-   * Устанавливает текущего пользователя в
-   * локальном хранилище.
-   * */
+  
   static URL = '/user'
 
   static setCurrent(user) {
-        return localStorage.getItem(user)
+        localStorage.setItem('user', JSON.stringify(user))
   }
 
-  /**
-   * Удаляет информацию об авторизованном
-   * пользователе из локального хранилища.
-   * */
   static unsetCurrent() {
-   const curUser = setCurrent(user)
-    return localStorage.removeItem(curUser)
+     localStorage.getItem('user')
 
   }
 
-  /** 
-   * Возвращает текущего авторизованного пользователя
-   * из локального хранилища
-   * */
   static current() {
-    return localStorage.getItem(user)
+    return JSON.parse(localStorage.getItem('user'))
   }
 
-  /**
-   * Получает информацию о текущем
-   * авторизованном пользователе.
-   * */
   static fetch(callback) {
     createRequest({
       url: this.URL,
       method: "GET",
       data,
       callback : ( err, response ) => {
-        localStorage.setItem('user')
+        if(response && response.user){
+          this.setCurrent(response.user);
+        }
+        callback(err, response);
       }
     })
   }

@@ -1,4 +1,6 @@
-/**
+ 
+ 
+ /**
  * Класс Sidebar отвечает за работу боковой колонки:
  * кнопки скрытия/показа колонки в мобильной версии сайта
  * и за кнопки меню
@@ -18,7 +20,13 @@ class Sidebar {
    * при нажатии на кнопку .sidebar-toggle
    * */
   static initToggleButton() {
-
+    const pushMenu = document.querySelector('.sidebar-toggle');
+    const bodySkinBlue = document.querySelector('.skin-blue');
+    pushMenu.addEventListener('click', (event)=>{
+    event.preventDefault()
+    bodySkinBlue.classList.toggle('.sidebar-open')
+    bodySkinBlue.classList.toggle('.sidebar-collapse')
+})
   }
 
   /**
@@ -29,6 +37,26 @@ class Sidebar {
    * выходу устанавливает App.setState( 'init' )
    * */
   static initAuthLinks() {
+    const menuRegister = document.querySelector('.menu-item_register')
+    const menuLogin = document.querySelector('.menu-item_login')
+    const menuLogout = document.querySelector('.menu-item_logout')
 
+    menuRegister.addEventListener('click', (event)=>{
+      event.preventDefault()
+       const modalRegister = App.getModal('#modal-register')
+       modalRegister.open()
+    })
+
+    menuLogin.addEventListener('click', (event)=>{
+      event.preventDefault()
+       const modalRegister = App.getModal('#modal-login')
+       modalRegister.open()
+    })
+
+    menuLogout.addEventListener('click', (event)=>{
+      event.preventDefault()
+      User.logout(App.setState( 'init' ))
+       
+    })
   }
 }
