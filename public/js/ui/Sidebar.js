@@ -43,13 +43,13 @@ class Sidebar {
 
     menuRegister.addEventListener('click', (event)=>{
       event.preventDefault()
-       const modalRegister = App.getModal('#modal-register')
+       const modalRegister = App.getModal('modal-register')
        modalRegister.open()
     })
 
     menuLogin.addEventListener('click', (event)=>{
       event.preventDefault()
-       const modalRegister = App.getModal('#modal-login')
+       const modalRegister = App.getModal('modal-login')
        modalRegister.open()
     })
 
