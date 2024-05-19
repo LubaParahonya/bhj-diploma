@@ -34,15 +34,17 @@ class TransactionsPage {
    * TransactionsPage.removeAccount соответственно
    * */
   registerEvents() {
-document.querySelector('.remove-account').addEventListener('click', (event) =>{
-  event.preventDefault()
-  this.removeAccount()
-})
-
-document.querySelector('.transaction__remove').addEventListener('click', (event) =>{
-  event.preventDefault()
-  this.removeTransaction(this.element.dataset.id)
-})
+    this.element.addEventListener( 'click', event => {
+      const transButton = event.target.closest( '.transaction__remove' );
+      const accButton = event.target.closest('.remove-account');
+      if (transButton) {
+        const {id} = transButton.dataset;
+        this.removeTransaction(id);
+      }
+      if (accButton) {
+        this.removeAccount()
+      }
+    });
   }
 
   /**
@@ -55,18 +57,15 @@ document.querySelector('.transaction__remove').addEventListener('click', (event)
    * для обновления приложения
    * */
   removeAccount() {
-if(this.lastOptions ){
-  Account.remove(data, (response, err) =>{
-    if(response && response.user){
-      if(confirm('Вы действительно хотите удалить счёт?') === true){
-      App.updateWidgets() 
-      App.updateForms()
-      }
-      
+    if (this.lastOptions && confirm('Вы действительно хотите удалить счёт?')) {
+      Account.remove({id: this.lastOptions.account_id}, (err, response) => {
+        if (response && response.success) {
+          App.updateWidgets();
+          App.updateForms();
+        }
+      });
+      this.clear();
     }
-  })
-  this.clear()
-}
   }
 
   /**
@@ -76,14 +75,13 @@ if(this.lastOptions ){
    * либо обновляйте текущую страницу (метод update) и виджет со счетами
    * */
   removeTransaction( id ) {
-    Transaction.remove(data.id, (response, err)=> {
-      if(response && response.user){
-        if(confirm('Вы действительно хотите удалить счёт?') === true){
-          App.update()
+    if (confirm('Вы действительно хотите удалить транзакцию?')) {
+      Transaction.remove({id}, (err, response) => {
+        if (response && response.success) {
+          App.update();
         }
-       
-      }
-    })
+      });
+    }
   }
 
   /**
@@ -145,9 +143,30 @@ if(this.lastOptions ){
    * item - объект с информацией о транзакции
    * */
   getTransactionHTML(item){
-if(item.type === 'expense ' ||item.type === 'income' ){
-  formatDate(item.created_at)
-}
+return `<div class="transaction transaction_${item.type} row">
+    <div class="col-md-7 transaction__details">
+      <div class="transaction__icon">
+          <span class="fa fa-money fa-2x"></span>
+      </div>
+      <div class="transaction__info">
+          <h4 class="transaction__title">${item.name}</h4>
+          <!-- дата -->
+          <div class="transaction__date">${this.formatDate(item.created_at)}</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="transaction__summ">
+      ${item.sum}
+          200 <span class="currency">₽</span>
+      </div>
+    </div>
+    <div class="col-md-2 transaction__controls">
+        <!-- в data-id нужно поместить id -->
+        <button class="btn btn-danger transaction__remove" data-id="${item.id}">
+            <i class="fa fa-trash"></i>  
+        </button>
+    </div>
+</div>`
   }
 
   /**
@@ -155,10 +174,15 @@ if(item.type === 'expense ' ||item.type === 'income' ){
    * используя getTransactionHTML
    * */
   renderTransactions(data){
-    const content = document.querySelector('.content')
-    data.forEach(item => {
-      content.insertAdjacentHTM('afterend', getTransactionHTML(item))
-    });
-    
-  }
+    const content = this.element.querySelector('.content');
+    content.innerHTML = '';
+
+    Transaction.list({}, (err, response) => {
+      if (response && response.success) {
+        content.innerHTML = items.reduce((accumulator, item) => accumulator + this.getTransactionHTML(item));  
+      }
+   })
+ }
+ 
 }
+

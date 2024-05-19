@@ -16,19 +16,8 @@ class AsyncForm {
     });
   }
   getData() {
-    ///должан быть одна форма, а не цикл из массива форм
-    const forms = Array.from(document.getElementsByTagName('form'))
-    forms.forEach(elemForm => {
-      const key = elemForm.querySelector('input').name
-      const value = elemForm.querySelector('input').value
-      const formData = new FormData(elemForm)
-      entries = formData.entries()
-      for(const [key, value] of entries){
-        entries.push(`${key}=${value}`)
-      }
-      
-    })
-    return entries
+    const formData = new FormData(this.element);
+    return Object.fromEntries(formData.entries());
   }
 
   onSubmit(options) {}

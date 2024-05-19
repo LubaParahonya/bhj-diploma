@@ -1,31 +1,27 @@
-const createRequest = (
-  options = { 'url': url, 'data': data, 'method': method, 'callback': callback }
-) => {
-  try {
-    for (let [key, value] of Object.entries(options)) {
-      arrKeyValue = `${JSON.stringify(key)}: ${JSON.stringify(value)}`;
-    }
+const createRequest = (options = { }) => {
     const xhr = new XMLHttpRequest();
     xhr.responseType = "json";
+    const formData = new FormData();
+    let url = options.url
     if (method === "GET") {
-      const newArray = [url + "?"];
-      for (let key in data) {
-        newArray.push(`${key}=${data[key]}&`);
+      const newArray = [options.url + "?"];
+      for (let key in options.data) {
+        newArray.push(`${key}=${options.data[key]}&`);     
       }
-      xhr.open(method, newArray);
-      xhr.send();
+      url = newArray.join('').slice(0, -1)
     } else {
-      formData = new FormData();
-      for (let [key, value] of Object.entries(data)) {
+      for (let [key, value] of Object.entries(options.data)) {
         formData.append(key, value);
       }
-      xhr.open(method, url);
-      xhr.send(formData);
     }
-    xhr.onload = () => {
-      callback(response);
-    };
-  } catch (error) {
-    callback(error);
-  }
+    try {
+      xhr.open(options.method, url);
+      xhr.send(formData);
+    } catch (err) {
+      options.callback(err);
+    }
+  
+    xhr.addEventListener('load', () => {options.callback(null, xhr.response)});
+    xhr.addEventListener('error', () => {options.callback(xhr.statusText, null)});
+  
 };

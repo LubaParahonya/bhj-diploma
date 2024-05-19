@@ -3,7 +3,7 @@
  * отображения счетов в боковой колонке
  * */
 
-const { response } = require("express")
+
 
 class AccountsWidget {
   /**
@@ -18,10 +18,10 @@ class AccountsWidget {
   constructor( element ) {
     if(!element){
       throw new Error('Ошибка')
-      this.element = element
-      this.registerEvents()
-      AccountsWidget.update()
     }
+    this.element = element
+    this.registerEvents()
+    AccountsWidget.update()
 
   }
 
@@ -107,12 +107,12 @@ document.querySelectorAll('.accounts-panel').forEach(element => {
    * item - объект с данными о счёте
    * */
   getAccountHTML(item){
-       return <li class="active account" data-id="${item.id}">
+       return `<li class="active account" data-id="${item.id}">
        <a href="#">
            <span>${item.name}</span> /
            <span>${item.sum}</span>
        </a>
-   </li>
+   </li>`
   }
 
   /**
